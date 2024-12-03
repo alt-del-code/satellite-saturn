@@ -28,7 +28,7 @@ const categories = [...new Set(portfolioItems.map(item => item.data.category))];
       </button>
       {categories.map((category: string) => (
         <button 
-          class="category-filter px-6 py-2 rounded-full bg-gray-100 hover:bg-primary hover:text-white transition-colors"
+          class="category-filter px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-primary hover:text-white transition-colors"
           data-category={category}
         >
           {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -51,6 +51,8 @@ const categories = [...new Set(portfolioItems.map(item => item.data.category))];
                 src={item.data.thumbnail}
                 alt={item.data.title}
                 class="w-full aspect-video object-cover transition-transform group-hover:scale-110"
+                width={800}
+                height={450}
               />
             )}
             <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -64,15 +66,15 @@ const categories = [...new Set(portfolioItems.map(item => item.data.category))];
           </div>
           
           <div class="mt-4">
-            <h2 class="text-xl font-semibold mb-2">
+            <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
               {item.data.title}
             </h2>
-            <p class="text-gray-600 mb-4 line-clamp-2">
+            <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
               {item.data.description}
             </p>
             <div class="flex flex-wrap gap-2">
               {item.data.technologies.map((tech: string) => (
-                <span class="px-3 py-1 bg-gray-100 text-sm rounded-full">
+                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-sm rounded-full text-gray-600 dark:text-gray-400">
                   {tech}
                 </span>
               ))}

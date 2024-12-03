@@ -1,95 +1,85 @@
 import { config, fields, collection } from '@keystatic/core';
 
-// Define the content types
-type AboutPage = {
-  title: string;
-  intro: string;
-  image: string;
-  content: string;
-  meta: {
-    title: string;
-    description: string;
-  };
-};
-
-type BlogPost = {
-  title: string;
-  publishedDate: string;
-  author: string;
-  excerpt: string;
-  featuredImage: string;
-  categories: string[];
-  tags: string[];
-  content: string;
-  meta: {
-    title: string;
-    description: string;
-  };
-};
-
-type PortfolioItem = {
-  title: string;
-  description: string;
-  category: 'fabrication' | 'material-supply' | 'hardware-supply' | 'automation';
-  clientName: string;
-  completionDate: string;
-  images: string[];
-  projectUrl: string;
-  automationSystem?: string;
-  technologies?: string[];
-  systemComponents?: string[];
-  processOverview?: string;
-  outcomeBenefits?: string;
-  content: string;
-  meta: {
-    title: string;
-    description: string;
-  };
-};
-
 export default config({
   storage: {
-    kind: 'github',
-    repo: {
-      owner: 'your-username',
-      name: 'your-repo-name',
-    },
+    kind: 'cloud',
+  },
+  cloud: {
+    project: 'krrishco/satellite-saturn',
   },
   collections: {
-    about: collection<AboutPage>({
+    about: collection({
       label: 'About Page',
       slugField: 'title',
       path: 'src/content/about/*',
       format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
+        subtitle: fields.text({ label: 'Subtitle' }),
         intro: fields.text({ label: 'Introduction', multiline: true }),
-        image: fields.image({
-          label: 'About Image',
-          directory: 'public/images/about',
-          publicPath: '/images/about/',
-        }),
-        content: fields.mdx({
-          label: 'Content',
-          description: 'Main content in MDX format',
-        }),
+        vision: fields.text({ label: 'Vision Statement', multiline: true }),
+        mission: fields.text({ label: 'Mission Statement', multiline: true }),
+        values: fields.array(
+          fields.object({
+            title: fields.text({ label: 'Value Title' }),
+            description: fields.text({ label: 'Value Description', multiline: true }),
+            icon: fields.text({ label: 'Icon Name (from Lucide)' })
+          }),
+          {
+            label: 'Core Values',
+            itemLabel: props => props.fields.title.value
+          }
+        ),
+        stats: fields.array(
+          fields.object({
+            value: fields.text({ label: 'Statistic Value' }),
+            label: fields.text({ label: 'Statistic Label' }),
+            description: fields.text({ label: 'Short Description' })
+          }),
+          {
+            label: 'Key Statistics',
+            itemLabel: props => `${props.fields.value.value} ${props.fields.label.value}`
+          }
+        ),
+        team: fields.array(
+          fields.object({
+            name: fields.text({ label: 'Name' }),
+            position: fields.text({ label: 'Position' }),
+            bio: fields.text({ label: 'Bio', multiline: true }),
+            image: fields.image({
+              label: 'Profile Image',
+              directory: 'public/images/team',
+              publicPath: '/images/team/'
+            })
+          }),
+          {
+            label: 'Team Members',
+            itemLabel: props => props.fields.name.value
+          }
+        ),
+        certifications: fields.array(
+          fields.object({
+            name: fields.text({ label: 'Certification Name' }),
+            issuer: fields.text({ label: 'Issuing Organization' }),
+            year: fields.text({ label: 'Year Obtained' }),
+            image: fields.image({
+              label: 'Certificate Image',
+              directory: 'public/images/certifications',
+              publicPath: '/images/certifications/'
+            })
+          }),
+          {
+            label: 'Certifications',
+            itemLabel: props => props.fields.name.value
+          }
+        ),
         meta: fields.object({
-          label: 'SEO Metadata',
-          fields: {
-            title: fields.text({
-              label: 'Meta Title',
-              validation: { length: { min: 1 } },
-            }),
-            description: fields.text({
-              label: 'Meta Description',
-              multiline: true,
-              validation: { length: { min: 1 } },
-            }),
-          },
-        }),
-      },
+          title: fields.text({ label: 'SEO Title' }),
+          description: fields.text({ label: 'SEO Description', multiline: true })
+        })
+      }
     }),
-    'blog-posts': collection<BlogPost>({
+    'blog-posts': collection({
       label: 'Blog Posts',
       slugField: 'title',
       path: 'src/content/blog/*',
@@ -108,34 +98,29 @@ export default config({
           fields.text({ label: 'Category' }),
           {
             label: 'Categories',
-            itemLabel: (props) => props.value || 'Category',
+            itemLabel: (props) => props.value,
           }
         ),
         tags: fields.array(
           fields.text({ label: 'Tag' }),
           {
             label: 'Tags',
-            itemLabel: (props) => props.value || 'Tag',
+            itemLabel: (props) => props.value,
           }
         ),
         content: fields.mdx({ label: 'Content' }),
-        meta: fields.object({
-          label: 'SEO Metadata',
-          fields: {
-            title: fields.text({
-              label: 'Meta Title',
-              validation: { length: { min: 1 } },
-            }),
-            description: fields.text({
-              label: 'Meta Description',
-              multiline: true,
-              validation: { length: { min: 1 } },
-            }),
-          },
+        metaTitle: fields.text({
+          label: 'SEO Title',
+          validation: { length: { min: 1 } },
+        }),
+        metaDescription: fields.text({
+          label: 'SEO Description',
+          multiline: true,
+          validation: { length: { min: 1 } },
         }),
       },
     }),
-    'portfolio-items': collection<PortfolioItem>({
+    'portfolio-items': collection({
       label: 'Portfolio Items',
       slugField: 'title',
       path: 'src/content/portfolio/*',
@@ -157,13 +142,13 @@ export default config({
         completionDate: fields.date({ label: 'Completion Date' }),
         images: fields.array(
           fields.image({
-            label: 'Project Images',
+            label: 'Project Image',
             directory: 'public/images/portfolio',
             publicPath: '/images/portfolio/',
           }),
           {
             label: 'Project Images',
-            itemLabel: (props) => props.value || 'Image',
+            itemLabel: (props) => props.value ? 'Image' : 'No image selected',
           }
         ),
         projectUrl: fields.text({ label: 'Project URL' }),
@@ -175,14 +160,14 @@ export default config({
           fields.text({ label: 'Technology/Tool' }),
           {
             label: 'Technologies Used',
-            itemLabel: (props) => props.value || 'Technology',
+            itemLabel: (props) => props.value,
           }
         ),
         systemComponents: fields.array(
           fields.text({ label: 'System Component' }),
           {
-            label: 'System Components (e.g., sensors, actuators)',
-            itemLabel: (props) => props.value || 'Component',
+            label: 'System Components',
+            itemLabel: (props) => props.value,
           }
         ),
         processOverview: fields.text({
@@ -196,19 +181,14 @@ export default config({
           description: 'What outcomes or benefits did this automation bring to the client?',
         }),
         content: fields.mdx({ label: 'Project Details' }),
-        meta: fields.object({
-          label: 'SEO Metadata',
-          fields: {
-            title: fields.text({
-              label: 'Meta Title',
-              validation: { length: { min: 1 } },
-            }),
-            description: fields.text({
-              label: 'Meta Description',
-              multiline: true,
-              validation: { length: { min: 1 } },
-            }),
-          },
+        metaTitle: fields.text({
+          label: 'SEO Title',
+          validation: { length: { min: 1 } },
+        }),
+        metaDescription: fields.text({
+          label: 'SEO Description',
+          multiline: true,
+          validation: { length: { min: 1 } },
         }),
       },
     }),
