@@ -1,0 +1,55 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  buttonText?: string;
+  formId?: string;
+}
+
+const { 
+  buttonText = "Request Quote",
+  formId = "3l0ykX"
+} = Astro.props;
+---
+
+<button
+  id="open-tally"
+  class="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+  data-tally-form={formId}
+>
+  {buttonText}
+  <Icon name="ph:arrow-right-bold" class="w-5 h-5 ml-2" />
+</button>
+
+<!-- Tally Script -->
+<script is:inline>
+  (function(d){
+    var s = d.createElement("script");
+    s.setAttribute("data-tally-script", "true");
+    s.src = "https://tally.so/widgets/embed.js";
+    s.defer = true;
+    d.body.appendChild(s);
+  })(document);
+</script>
+
+<script>
+  // Type-safe event handler
+  declare global {
+    interface Window {
+      Tally?: {
+        openPopup: (formId: string) => void;
+      };
+    }
+  }
+
+  const button = document.getElementById('open-tally');
+  const formId = button?.getAttribute('data-tally-form');
+
+  if (button && formId) {
+    button.addEventListener('click', () => {
+      if (window.Tally) {
+        window.Tally.openPopup(formId);
+      }
+    });
+  }
+</script> 

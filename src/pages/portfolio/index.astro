@@ -1,0 +1,111 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+const portfolioItems = await getCollection('portfolio-items');
+
+// Get unique categories for the filter
+const categories = [...new Set(portfolioItems.map(item => item.data.category))];
+---
+
+<Layout 
+  title="Portfolio - Our Work"
+  description="Explore our portfolio of projects and see how we've helped our clients achieve their goals."
+>
+  <main class="container mx-auto px-4 py-16">
+    <h1 class="text-4xl md:text-5xl font-bold mb-12 text-center" data-aos="fade-up">
+      Portfolio
+    </h1>
+
+    <!-- Category Filter -->
+    <div class="flex justify-center mb-12 gap-4 flex-wrap" data-aos="fade-up" data-aos-delay="100">
+      <button 
+        class="category-filter active px-6 py-2 rounded-full bg-primary text-white transition-colors"
+        data-category="all"
+      >
+        All
+      </button>
+      {categories.map((category: string) => (
+        <button 
+          class="category-filter px-6 py-2 rounded-full bg-gray-100 hover:bg-primary hover:text-white transition-colors"
+          data-category={category}
+        >
+          {category.charAt(0).toUpperCase() + category.slice(1)}
+        </button>
+      ))}
+    </div>
+
+    <!-- Portfolio Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {portfolioItems.map((item, index) => (
+        <article 
+          class="portfolio-item group"
+          data-category={item.data.category}
+          data-aos="fade-up"
+          data-aos-delay={index * 100}
+        >
+          <div class="relative overflow-hidden rounded-lg shadow-lg">
+            {item.data.thumbnail && (
+              <Image
+                src={item.data.thumbnail}
+                alt={item.data.title}
+                class="w-full aspect-video object-cover transition-transform group-hover:scale-110"
+              />
+            )}
+            <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <a 
+                href={`/portfolio/${item.slug}`}
+                class="px-6 py-3 bg-primary text-white rounded-full transform -translate-y-4 group-hover:translate-y-0 transition-transform"
+              >
+                View Project
+              </a>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <h2 class="text-xl font-semibold mb-2">
+              {item.data.title}
+            </h2>
+            <p class="text-gray-600 mb-4 line-clamp-2">
+              {item.data.description}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              {item.data.technologies.map((tech: string) => (
+                <span class="px-3 py-1 bg-gray-100 text-sm rounded-full">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Portfolio filtering functionality
+  const filterButtons = document.querySelectorAll<HTMLButtonElement>('.category-filter');
+  const portfolioItems = document.querySelectorAll<HTMLElement>('.portfolio-item');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const category = button.getAttribute('data-category');
+      
+      // Update active button
+      filterButtons.forEach(btn => btn.classList.remove('active', 'bg-primary', 'text-white'));
+      button.classList.add('active', 'bg-primary', 'text-white');
+      
+      // Filter items
+      portfolioItems.forEach(item => {
+        const itemCategory = item.getAttribute('data-category');
+        if (category === 'all' || category === itemCategory) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+</script> 

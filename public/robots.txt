@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+
+# Optimize crawling
+Crawl-delay: 10
+
+# Important pages
+Allow: /about
+Allow: /services
+Allow: /contact
+
+# Prevent crawling of non-public pages
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /*?*  # Prevent crawling of URLs with query parameters
+
+# Sitemaps
+Sitemap: https://krrishco.com/sitemap-index.xml
+Sitemap: https://krrishco.com/sitemap.xml

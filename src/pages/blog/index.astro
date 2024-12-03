@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import { formatDate } from '../../utils/date';
+
+const posts = await getCollection('blog-posts');
+const sortedPosts = posts.sort((a, b) => 
+  new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime()
+);
+---
+
+<Layout 
+  title="Blog - Latest Posts and Updates"
+  description="Read our latest blog posts, articles, and updates about our work and industry insights."
+>
+  <main class="container mx-auto px-4 py-16">
+    <h1 class="text-4xl md:text-5xl font-bold mb-12 text-center" data-aos="fade-up">
+      Blog
+    </h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {sortedPosts.map((post, index) => (
+        <article 
+          class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:scale-105"
+          data-aos="fade-up"
+          data-aos-delay={index * 100}
+        >
+          {post.data.featuredImage && (
+            <div class="aspect-video overflow-hidden">
+              <Image
+                src={post.data.featuredImage}
+                alt={post.data.title}
+                class="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div class="p-6">
+            <div class="flex items-center text-sm text-gray-500 mb-2">
+              <span>{formatDate(post.data.publishedDate)}</span>
+              <span class="mx-2">•</span>
+              <span>{post.data.author}</span>
+            </div>
+            
+            <h2 class="text-xl font-semibold mb-2 hover:text-primary">
+              <a href={`/blog/${post.slug}`}>
+                {post.data.title}
+              </a>
+            </h2>
+            
+            <p class="text-gray-600 mb-4 line-clamp-3">
+              {post.data.excerpt}
+            </p>
+            
+            <div class="flex flex-wrap gap-2">
+              {post.data.categories.map(category => (
+                <span class="px-3 py-1 bg-gray-100 text-sm rounded-full">
+                  {category}
+                </span>
+              ))}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout> 

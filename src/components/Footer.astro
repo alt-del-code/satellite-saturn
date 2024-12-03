@@ -1,0 +1,201 @@
+---
+import { Icon } from 'astro-icon/components';
+import { Image } from 'astro:assets';
+import config from '../config';
+import logo from '../assets/images/logo.svg';
+
+const currentYear = new Date().getFullYear();
+
+const footerLinks = {
+  company: [
+    { label: "About Us", href: "/about" },
+    { label: "Services", href: "/services" },
+    { label: "Portfolio", href: "/portfolio" },
+    { label: "Careers", href: "/careers" },
+  ],
+  services: [
+    { label: "Precision Fabrication", href: "/services/fabrication" },
+    { label: "Industrial Supply", href: "/services/supply" },
+    { label: "Hardware Solutions", href: "/services/hardware" },
+    { label: "Technical Expertise", href: "/services/expertise" },
+  ],
+  support: [
+    { label: "Contact Us", href: "/contact" },
+    { label: "Request Quote", href: "/quote" },
+    { label: "Documentation", href: "/docs" },
+    { label: "FAQs", href: "/faqs" },
+  ],
+  legal: [
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Cookie Policy", href: "/cookies" },
+    { label: "Sitemap", href: "/sitemap.xml" },
+  ]
+};
+
+const socialLinks = [
+  { 
+    label: "LinkedIn",
+    href: config.company.social.linkedin,
+    icon: "lucide:linkedin"
+  },
+  { 
+    label: "Twitter",
+    href: config.company.social.twitter,
+    icon: "lucide:twitter"
+  },
+  { 
+    label: "Facebook",
+    href: config.company.social.facebook,
+    icon: "lucide:facebook"
+  }
+];
+---
+
+<footer class="bg-white dark:bg-dark-surface">
+  <div class="container mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <!-- Logo and Company Info -->
+      <div class="space-y-4">
+        <a href="/" class="flex items-center gap-3 group">
+          <Image 
+            src={logo}
+            alt={`${config.company.name} Logo`}
+            width={48}
+            height={48}
+            class="transition-transform duration-300 group-hover:scale-105"
+          />
+          <div class="flex flex-col">
+            <span class="text-lg font-bold text-primary-800 dark:text-dark-text-primary">
+              {config.company.name}
+            </span>
+            <span class="text-sm text-accent-steel-600 dark:text-dark-text-secondary">
+              {config.company.tagline}
+            </span>
+          </div>
+        </a>
+        <p class="text-gray-600 dark:text-gray-400 max-w-md">
+          Your trusted partner in industrial fabrication, material supply, and hardware solutions. 
+          Delivering excellence across India since {config.company.foundedYear}.
+        </p>
+        <!-- Contact Info -->
+        <div class="space-y-3">
+          <div class="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+            <Icon name="lucide:map-pin" class="w-5 h-5" />
+            <span>{config.company.contact.address.full}</span>
+          </div>
+          <div class="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+            <Icon name="lucide:phone" class="w-5 h-5" />
+            <a 
+              href={`tel:${config.company.contact.phone.primary}`}
+              class="hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+            >
+              {config.company.contact.phone.primary}
+            </a>
+          </div>
+          <div class="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
+            <Icon name="lucide:mail" class="w-5 h-5" />
+            <a 
+              href={`mailto:${config.company.contact.email.primary}`}
+              class="hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+            >
+              {config.company.contact.email.primary}
+            </a>
+          </div>
+        </div>
+      </div>
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
+          Company
+        </h3>
+        <ul class="mt-4 space-y-3">
+          {footerLinks.company.map(link => (
+            <li>
+              <a 
+                href={link.href}
+                class="text-gray-600 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
+          Services
+        </h3>
+        <ul class="mt-4 space-y-3">
+          {footerLinks.services.map(link => (
+            <li>
+              <a 
+                href={link.href}
+                class="text-gray-600 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
+          Support
+        </h3>
+        <ul class="mt-4 space-y-3">
+          {footerLinks.support.map(link => (
+            <li>
+              <a 
+                href={link.href}
+                class="text-gray-600 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom Bar -->
+  <div class="border-t border-gray-200/30 dark:border-white/10">
+    <div class="container mx-auto px-6 py-6 sm:px-6 lg:px-8">
+      <div class="md:flex md:items-center md:justify-between">
+        <div class="flex justify-center space-x-6 md:order-2">
+          {socialLinks.map(link => (
+            <a
+              href={link.href}
+              class="text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Follow us on ${link.label}`}
+            >
+              <Icon name={link.icon} class="w-6 h-6" />
+            </a>
+          ))}
+        </div>
+        <div class="mt-8 md:mt-0 md:order-1">
+          <div class="flex flex-col md:flex-row items-center justify-center md:justify-start space-y-3 md:space-y-0 md:space-x-6 text-sm text-gray-600 dark:text-gray-400">
+            <p>&copy; {currentYear} {config.company.name}. All rights reserved.</p>
+            <div class="flex items-center space-x-6">
+              {footerLinks.legal.map((link, index) => (
+                <>
+                  <a 
+                    href={link.href}
+                    class="hover:text-primary-700 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                  {index < footerLinks.legal.length - 1 && (
+                    <span class="h-4 w-px bg-gray-300 dark:bg-gray-700"></span>
+                  )}
+                </>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer> 
