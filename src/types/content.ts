@@ -1,10 +1,13 @@
-export interface AboutValue {
+import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
+
+export interface Value {
   title: string;
   description: string;
   icon: string;
 }
 
-export interface AboutStat {
+export interface Stat {
   value: string;
   label: string;
   description: string;
@@ -30,12 +33,15 @@ export interface AboutData {
   intro: string;
   vision: string;
   mission: string;
-  values: AboutValue[];
-  stats: AboutStat[];
-  team: TeamMember[];
-  certifications: Certification[];
+  content: string;
+  values?: Value[];
+  stats?: Stat[];
+  team?: TeamMember[];
+  certifications?: Certification[];
   meta: {
     title: string;
     description: string;
   };
-} 
+}
+
+export type AboutEntry = CollectionEntry<'about'>; 

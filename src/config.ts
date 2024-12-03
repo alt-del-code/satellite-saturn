@@ -7,15 +7,15 @@ const config = {
     foundedYear: "2008",
     contact: {
       address: {
-        street: "123 Industrial Area",
+        street: "Karapali",
         city: "Hosur",
         state: "Tamil Nadu",
         zip: "635109",
-        full: "123 Industrial Area, Hosur, Tamil Nadu 635109"
+        full: "Near to Carmel International School, Hosur, Tamil Nadu 635109"
       },
       phone: {
-        primary: "+91 99999 88888",
-        secondary: "+91 77777 66666"
+        primary: "+91 8667576940",
+        secondary: "+91 9944785905"
       },
       email: {
         primary: "info@krrishco.com",

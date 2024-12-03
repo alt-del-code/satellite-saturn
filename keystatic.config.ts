@@ -2,10 +2,7 @@ import { config, fields, collection } from '@keystatic/core';
 
 export default config({
   storage: {
-    kind: 'cloud',
-  },
-  cloud: {
-    project: 'krrishco/satellite-saturn',
+    kind: 'local',
   },
   collections: {
     about: collection({
@@ -19,6 +16,7 @@ export default config({
         intro: fields.text({ label: 'Introduction', multiline: true }),
         vision: fields.text({ label: 'Vision Statement', multiline: true }),
         mission: fields.text({ label: 'Mission Statement', multiline: true }),
+        content: fields.mdx({ label: 'Content' }),
         values: fields.array(
           fields.object({
             title: fields.text({ label: 'Value Title' }),
@@ -79,44 +77,34 @@ export default config({
         })
       }
     }),
-    'blog-posts': collection({
+    blog: collection({
       label: 'Blog Posts',
       slugField: 'title',
       path: 'src/content/blog/*',
-      format: { contentField: 'content' },
+      format: 'mdx',
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
-        publishedDate: fields.date({ label: 'Published Date' }),
-        author: fields.text({ label: 'Author Name' }),
-        excerpt: fields.text({ label: 'Excerpt', multiline: true }),
-        featuredImage: fields.image({
-          label: 'Featured Image',
+        publishDate: fields.date({ label: 'Publish Date' }),
+        author: fields.text({ label: 'Author' }),
+        image: fields.image({
+          label: 'Cover Image',
           directory: 'public/images/blog',
           publicPath: '/images/blog/',
         }),
-        categories: fields.array(
-          fields.text({ label: 'Category' }),
-          {
-            label: 'Categories',
-            itemLabel: (props) => props.value,
-          }
-        ),
-        tags: fields.array(
-          fields.text({ label: 'Tag' }),
-          {
-            label: 'Tags',
-            itemLabel: (props) => props.value,
-          }
-        ),
-        content: fields.mdx({ label: 'Content' }),
-        metaTitle: fields.text({
-          label: 'SEO Title',
-          validation: { length: { min: 1 } },
-        }),
-        metaDescription: fields.text({
-          label: 'SEO Description',
+        excerpt: fields.text({
+          label: 'Excerpt',
           multiline: true,
-          validation: { length: { min: 1 } },
+        }),
+        content: fields.mdx({
+          label: 'Content',
+          options: {
+            formatting: true,
+            links: true,
+          },
+          images: {
+            directory: 'public/images/blog',
+            publicPath: '/images/blog/',
+          },
         }),
       },
     }),

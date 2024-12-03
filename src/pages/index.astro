@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Section from '../components/layout/section.astro';
 import Hero from '../components/Hero.astro';
 import ServicesShowcase from '../components/sections/ServicesShowcase.astro';
 import ProcessFlow from '../components/sections/ProcessFlow.astro';
@@ -44,14 +43,14 @@ const heroContent = {
   description="Leading industrial fabrication and supply solutions provider in Hosur, Tamil Nadu. Precision manufacturing, quality materials, and expert service."
 >
   <main>
-    <Section> <Hero 
+    <Hero 
         title={heroContent.title}
         subtitle={heroContent.subtitle}
         description={heroContent.description}
         stats={heroContent.stats}
         slides={sortedSlides}
         features={heroContent.features}
-      /></Section>
+      />
     
     <ServicesShowcase />
     <ProcessFlow />

@@ -1,0 +1,49 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { formatDate } from '../../utils/date';
+import type { CollectionEntry } from 'astro:content';
+
+type BlogPost = CollectionEntry<'blog'>;
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+type Props = {
+  post: BlogPost;
+};
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<Layout title={`${post.data.title} | KrrishCo Blog`}>
+  <main class="container mx-auto px-4 py-12 max-w-4xl">
+    <article class="prose lg:prose-xl mx-auto" data-aos="fade-up">
+      {post.data.featuredImage && (
+        <img 
+          src={post.data.featuredImage}
+          alt={post.data.title}
+          class="w-full h-64 object-cover rounded-lg mb-8"
+        />
+      )}
+      <h1 class="text-4xl font-bold mb-4">{post.data.title}</h1>
+      <div class="flex items-center gap-4 text-gray-600 mb-8">
+        <time datetime={post.data.publishDate.toISOString()}>
+          {formatDate(post.data.publishDate)}
+        </time>
+        {post.data.author && (
+          <span>by {post.data.author}</span>
+        )}
+      </div>
+      <div class="prose-img:rounded-lg prose-a:text-blue-600">
+        <Content />
+      </div>
+    </article>
+  </main>
+</Layout> 

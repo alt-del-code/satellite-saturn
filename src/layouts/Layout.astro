@@ -3,6 +3,7 @@ import { ViewTransitions } from 'astro:transitions';
 import Navbar from '../components/Navbar.astro';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
+import Section from '../components/layout/section.astro';
 
 interface Props {
   title: string;
@@ -147,6 +148,7 @@ const schema = {
   </head>
   <body class="bg-white dark:bg-dark-bg text-accent-steel-600 dark:text-dark-text">
     <Navbar />
+    
     <slot />
     <Footer />
     <script>
