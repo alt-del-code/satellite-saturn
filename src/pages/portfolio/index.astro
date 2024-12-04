@@ -1,113 +1,85 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import Image from '@/components/Image.astro';
 
 const portfolioItems = await getCollection('portfolio-items');
 
-// Get unique categories for the filter
-const categories = [...new Set(portfolioItems.map(item => item.data.category))];
+// Add this helper function at the top of the frontmatter
+const resolveImage = (imagePath: string) => {
+  try {
+    return new URL(imagePath, import.meta.url).href;
+  } catch (e) {
+    return imagePath;
+  }
+};
+
+// Group items by category
+const itemsByCategory = portfolioItems.reduce((acc, item) => {
+  const category = item.data.category;
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push(item);
+  return acc;
+}, {} as Record<string, CollectionEntry<'portfolio-items'>[]>);
+
+// Sort categories for consistent display
+const sortedCategories = Object.keys(itemsByCategory).sort();
 ---
 
-<Layout 
-  title="Portfolio - Our Work"
-  description="Explore our portfolio of projects and see how we've helped our clients achieve their goals."
->
-  <main class="container mx-auto px-4 py-16">
-    <h1 class="text-4xl md:text-5xl font-bold mb-12 text-center" data-aos="fade-up">
-      Portfolio
-    </h1>
+<Layout title="Portfolio | Krrish & Co">
+  <main class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl md:text-5xl font-bold mb-8 text-center">Our Portfolio</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
+      Explore our diverse range of industrial solutions across fabrication, material supply, hardware solutions, and automation projects.
+    </p>
 
-    <!-- Category Filter -->
-    <div class="flex justify-center mb-12 gap-4 flex-wrap" data-aos="fade-up" data-aos-delay="100">
-      <button 
-        class="category-filter active px-6 py-2 rounded-full bg-primary text-white transition-colors"
-        data-category="all"
-      >
-        All
-      </button>
-      {categories.map((category: string) => (
-        <button 
-          class="category-filter px-6 py-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-primary hover:text-white transition-colors"
-          data-category={category}
-        >
-          {category.charAt(0).toUpperCase() + category.slice(1)}
-        </button>
-      ))}
-    </div>
-
-    <!-- Portfolio Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {portfolioItems.map((item, index) => (
-        <article 
-          class="portfolio-item group"
-          data-category={item.data.category}
-          data-aos="fade-up"
-          data-aos-delay={index * 100}
-        >
-          <div class="relative overflow-hidden rounded-lg shadow-lg">
-            {item.data.thumbnail && (
-              <Image
-                src={item.data.thumbnail}
-                alt={item.data.title}
-                class="w-full aspect-video object-cover transition-transform group-hover:scale-110"
-                width={800}
-                height={450}
-              />
-            )}
-            <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <a 
-                href={`/portfolio/${item.slug}`}
-                class="px-6 py-3 bg-primary text-white rounded-full transform -translate-y-4 group-hover:translate-y-0 transition-transform"
-              >
-                View Project
-              </a>
-            </div>
-          </div>
-          
-          <div class="mt-4">
-            <h2 class="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-              {item.data.title}
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-              {item.data.description}
-            </p>
-            <div class="flex flex-wrap gap-2">
-              {item.data.technologies.map((tech: string) => (
-                <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-sm rounded-full text-gray-600 dark:text-gray-400">
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-        </article>
-      ))}
-    </div>
+    {sortedCategories.map((category) => (
+      <section class="mb-16" data-aos="fade-up">
+        <h2 class="text-3xl font-bold mb-8 capitalize">
+          {category.replace('-', ' ')}
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {itemsByCategory[category].map((item) => (
+            <a 
+              href={`/portfolio/${item.slug}`}
+              class="group block"
+              data-aos="fade-up"
+            >
+              <article class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-transform duration-300 group-hover:transform group-hover:scale-105">
+                {item.data.images?.[0] && (
+                  <div class="relative h-48 overflow-hidden">
+                    <Image
+                      src={resolveImage(item.data.images[0])}
+                      alt={item.data.title}
+                      className="w-full h-full object-cover"
+                      width={800}
+                      height={600}
+                    />
+                  </div>
+                )}
+                <div class="p-6">
+                  <h3 class="text-xl font-semibold mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400">
+                    {item.data.title}
+                  </h3>
+                  <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    {item.data.description}
+                  </p>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">
+                      {item.data.clientName}
+                    </span>
+                    <span class="text-primary-600 dark:text-primary-400 font-medium">
+                      View Project →
+                    </span>
+                  </div>
+                </div>
+              </article>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
   </main>
 </Layout>
-
-<script>
-  // Portfolio filtering functionality
-  const filterButtons = document.querySelectorAll<HTMLButtonElement>('.category-filter');
-  const portfolioItems = document.querySelectorAll<HTMLElement>('.portfolio-item');
-
-  filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const category = button.getAttribute('data-category');
-      
-      // Update active button
-      filterButtons.forEach(btn => btn.classList.remove('active', 'bg-primary', 'text-white'));
-      button.classList.add('active', 'bg-primary', 'text-white');
-      
-      // Filter items
-      portfolioItems.forEach(item => {
-        const itemCategory = item.getAttribute('data-category');
-        if (category === 'all' || category === itemCategory) {
-          item.style.display = 'block';
-        } else {
-          item.style.display = 'none';
-        }
-      });
-    });
-  });
-</script> 

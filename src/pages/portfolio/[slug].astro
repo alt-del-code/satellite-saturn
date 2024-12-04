@@ -1,99 +1,104 @@
 ---
-import Layout from '../../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import type { PortfolioItem } from '../../types/portfolio';
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import Image from '@/components/Image.astro';
+
+type Props = {
+  item: CollectionEntry<'portfolio-items'>;
+};
+
+const resolveImage = (imagePath: string) => {
+  try {
+    return new URL(imagePath, import.meta.url).href;
+  } catch (e) {
+    return imagePath;
+  }
+};
 
 export async function getStaticPaths() {
-  const portfolioItems = await getCollection('portfolio-items') as CollectionEntry<'portfolio-items'>[];
-  return portfolioItems.map((item) => ({
+  const portfolioItems = await getCollection('portfolio-items');
+  return portfolioItems.map((item: CollectionEntry<'portfolio-items'>) => ({
     params: { slug: item.slug },
+    props: { item },
   }));
 }
 
-const { item } = Astro.props as { item: CollectionEntry<'portfolio-items'> };
+const { item } = Astro.props;
 const { Content } = await item.render();
 
 <Layout title={`${item.data.title} - Portfolio | Krrish & Co`}>
-  <main class="container mx-auto px-4 py-12">
+  <main class="container mx-auto px-4 py-8">
     <article class="max-w-4xl mx-auto">
-      <header class="mb-12" data-aos="fade-down">
-        <h1 class="text-4xl md:text-5xl font-bold mb-6">{item.data.title}</h1>
-        <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">
-          {item.data.description}
-        </p>
-        <div class="flex flex-wrap gap-4 mb-6">
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">Client:</span>
-            <span>{item.data.clientName}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">Completed:</span>
-            <span>{new Date(item.data.completionDate).toLocaleDateString()}</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="font-semibold">Category:</span>
-            <span class="capitalize">{item.data.category.replace('-', ' ')}</span>
-          </div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">{item.data.title}</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300 mb-8">
+        {item.data.description}
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div>
+          <h3 class="font-semibold mb-2">Client</h3>
+          <span>{item.data.clientName}</span>
         </div>
-      </header>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-        {item.data.images?.map((image: string, index: number) => (
-          <div 
-            class="relative overflow-hidden rounded-lg shadow-lg"
-            data-aos="fade-up"
-            data-aos-delay={index * 100}
-            key={image} // Added key for unique identification
-          >
-            <Image
-              src={image}
-              alt={`${item.data.title} - Image ${index + 1}`}
-              class="w-full h-full object-cover"
-              width={800}
-              height={600}
-            />
-          </div>
-        ))}
+        <div>
+          <h3 class="font-semibold mb-2">Completion Date</h3>
+          <span>{new Date(item.data.completionDate).toLocaleDateString()}</span>
+        </div>
+        <div>
+          <h3 class="font-semibold mb-2">Category</h3>
+          <span class="capitalize">{item.data.category.replace('-', ' ')}</span>
+        </div>
       </div>
 
-      <div class="prose prose-lg dark:prose-invert max-w-none mb-12" data-aos="fade-up">
-        <Content />
-      </div>
+      {item.data.images?.map((image: string, index: number) => (
+        <div 
+          class="mb-8"
+          data-aos="fade-up"
+          data-aos-delay={index * 100}
+        >
+          <Image
+            src={resolveImage(image)}
+            alt={`${item.data.title} - Image ${index + 1}`}
+            className="rounded-lg shadow-lg"
+            width={1200}
+            height={800}
+          />
+        </div>
+      ))}
 
       {item.data.technologies && (
-        <section class="mb-12" data-aos="fade-up">
-          <h2 class="text-2xl font-semibold mb-4">Technologies Used</h2>
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold mb-4">Technologies Used</h2>
           <div class="flex flex-wrap gap-2">
             {item.data.technologies.map((tech: string) => (
-              <span class="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full" key={tech}>
+              <span class="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full">
                 {tech}
               </span>
             ))}
           </div>
-        </section>
+        </div>
       )}
 
       {item.data.systemComponents && (
-        <section class="mb-12" data-aos="fade-up">
-          <h2 class="text-2xl font-semibold mb-4">System Components</h2>
-          <ul class="list-disc list-inside space-y-2">
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold mb-4">System Components</h2>
+          <ul class="list-disc pl-5">
             {item.data.systemComponents.map((component: string) => (
-              <li key={component}>{component}</li>
+              <li>{component}</li>
             ))}
           </ul>
-        </section>
+        </div>
       )}
 
       {item.data.outcomeBenefits && (
-        <section data-aos="fade-up">
-          <h2 class="text-2xl font-semibold mb-4">Outcomes & Benefits</h2>
-          <div class="prose prose-lg dark:prose-invert">
-            <p>{item.data.outcomeBenefits}</p>
-          </div>
-        </section>
+        <div class="mb-8">
+          <h2 class="text-2xl font-bold mb-4">Outcomes & Benefits</h2>
+          <p>{item.data.outcomeBenefits}</p>
+        </div>
       )}
+
+      <div class="prose dark:prose-invert max-w-none">
+        <Content />
+      </div>
     </article>
   </main>
-</Layout> 
+</Layout>

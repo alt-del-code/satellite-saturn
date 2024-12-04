@@ -2,27 +2,27 @@
 import config from '@/config';
 
 interface Props {
-    formId?: string;
-    width?: string;
-    height?: string;
+  formId?: string;
+  width?: string;
+  height?: string;
 }
 
-const { 
-    formId = config.integrations.tally.formId, 
-    width = config.integrations.tally.defaultWidth, 
-    height = config.integrations.tally.defaultHeight 
+const {
+  formId = config.integrations.forms.tally.contact.formId,
+  width = config.integrations.forms.defaultWidth,
+  height = config.integrations.forms.defaultHeight,
 } = Astro.props;
 ---
 
 <div class="w-full">
-    <iframe
-        src={`https://tally.so/embed/${formId}`}
-        width={width}
-        height={height}
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0"
-        title="Contact Form"
-    >
-    </iframe>
+  <iframe
+    src={`https://tally.so/embed/${formId}`}
+    width={width}
+    height={height}
+    frameborder="0"
+    marginheight="0"
+    marginwidth="0"
+    title="Contact Form"
+  >
+  </iframe>
 </div>

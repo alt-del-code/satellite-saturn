@@ -1,8 +1,11 @@
-import { config, fields, collection } from '@keystatic/core';
+import { config, collection, fields } from '@keystatic/core';
 
 export default config({
   storage: {
-    kind: 'local',
+    kind: 'cloud',
+  },
+  cloud: {
+    project: 'krrishco/satellite-saturn',
   },
   collections: {
     about: collection({
@@ -81,30 +84,26 @@ export default config({
       label: 'Blog Posts',
       slugField: 'title',
       path: 'src/content/blog/*',
-      format: 'mdx',
+      format: { contentField: 'content' },
       schema: {
         title: fields.slug({ name: { label: 'Title' } }),
         publishDate: fields.date({ label: 'Publish Date' }),
         author: fields.text({ label: 'Author' }),
-        image: fields.image({
-          label: 'Cover Image',
-          directory: 'public/images/blog',
-          publicPath: '/images/blog/',
-        }),
-        excerpt: fields.text({
-          label: 'Excerpt',
-          multiline: true,
-        }),
-        content: fields.mdx({
+        excerpt: fields.text({ label: 'Excerpt', multiline: true }),
+        content: fields.document({
           label: 'Content',
-          options: {
-            formatting: true,
-            links: true,
-          },
-          images: {
-            directory: 'public/images/blog',
-            publicPath: '/images/blog/',
-          },
+          formatting: true,
+          dividers: true,
+          links: true,
+          images: true
+        }),
+        meta: fields.object({
+          title: fields.text({ label: 'Meta Title' }),
+          description: fields.text({ label: 'Meta Description', multiline: true }),
+        }),
+        tags: fields.array(fields.text({ label: 'Tag' }), {
+          label: 'Tags',
+          itemLabel: (props) => props.value,
         }),
       },
     }),
@@ -128,56 +127,45 @@ export default config({
         }),
         clientName: fields.text({ label: 'Client Name' }),
         completionDate: fields.date({ label: 'Completion Date' }),
-        images: fields.array(
-          fields.image({
-            label: 'Project Image',
-            directory: 'public/images/portfolio',
-            publicPath: '/images/portfolio/',
-          }),
-          {
-            label: 'Project Images',
-            itemLabel: (props) => props.value ? 'Image' : 'No image selected',
-          }
-        ),
-        projectUrl: fields.text({ label: 'Project URL' }),
-        automationSystem: fields.text({
+        images: fields.array(fields.text({ label: 'Image URL' }), {
+          label: 'Images',
+          itemLabel: (props) => props.value,
+        }),
+        projectUrl: fields.text({ 
+          label: 'Project URL',
+          validation: { length: { min: 0 } }
+        }),
+        automationSystem: fields.text({ 
           label: 'Automation System',
-          description: 'Type of automation system (e.g., industrial robots, IoT)',
+          validation: { length: { min: 0 } }
         }),
-        technologies: fields.array(
-          fields.text({ label: 'Technology/Tool' }),
-          {
-            label: 'Technologies Used',
-            itemLabel: (props) => props.value,
-          }
-        ),
-        systemComponents: fields.array(
-          fields.text({ label: 'System Component' }),
-          {
-            label: 'System Components',
-            itemLabel: (props) => props.value,
-          }
-        ),
-        processOverview: fields.text({
-          label: 'Process Overview',
+        technologies: fields.array(fields.text({ label: 'Technology' }), {
+          label: 'Technologies',
+          itemLabel: (props) => props.value,
+        }),
+        systemComponents: fields.array(fields.text({ label: 'Component' }), {
+          label: 'System Components',
+          itemLabel: (props) => props.value,
+        }),
+        processOverview: fields.text({ 
+          label: 'Process Overview', 
           multiline: true,
-          description: 'Describe the automated process or workflow.',
+          validation: { length: { min: 0 } }
         }),
-        outcomeBenefits: fields.text({
-          label: 'Outcome/Benefits',
+        outcomeBenefits: fields.text({ 
+          label: 'Outcomes & Benefits', 
           multiline: true,
-          description: 'What outcomes or benefits did this automation bring to the client?',
+          validation: { length: { min: 0 } }
         }),
-        content: fields.mdx({ label: 'Project Details' }),
-        metaTitle: fields.text({
-          label: 'SEO Title',
-          validation: { length: { min: 1 } },
+        content: fields.document({
+          label: 'Content',
+          formatting: true,
+          dividers: true,
+          links: true,
+          images: true
         }),
-        metaDescription: fields.text({
-          label: 'SEO Description',
-          multiline: true,
-          validation: { length: { min: 1 } },
-        }),
+        metaTitle: fields.text({ label: 'Meta Title' }),
+        metaDescription: fields.text({ label: 'Meta Description', multiline: true }),
       },
     }),
   },

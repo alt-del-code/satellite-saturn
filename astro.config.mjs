@@ -9,7 +9,8 @@ import icon from 'astro-icon';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://your-domain.com',
+  site: 'https:///alt-del-code.github.io',
+  base: '/satellite-saturn',
   integrations: [
     tailwind(),
     react(),
@@ -35,14 +36,14 @@ export default defineConfig({
       }
     })
   ],
-  output: 'hybrid',
+  output: 'static',
   build: {
     assets: '_assets',
     inlineStylesheets: 'auto'
   },
   vite: {
     ssr: {
-      noExternal: ['@keystatic/core']
+      noExternal: ['@keystatic/core', '@keystatic/astro']
     },
     resolve: {
       alias: {
@@ -50,7 +51,23 @@ export default defineConfig({
       }
     },
     optimizeDeps: {
-      include: ['react', 'react-dom', 'lodash']
+      include: [
+        '@keystatic/core',
+        '@keystatic/core/ui',
+        // Add other Keystatic dependencies
+      ],
+      exclude: ['@keystatic/astro']
+    },
+    define: {
+      'process.env.NODE_ENV': JSON.stringify('production')
+    },
+    build: {
+      minify: true,
+      rollupOptions: {
+        output: {
+          manualChunks: undefined
+        }
+      }
     }
   }
 });

@@ -79,9 +79,30 @@ const materialSupplyCollection = defineCollection({
   })
 });
 
+const portfolioItemsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    category: z.enum(['fabrication', 'material-supply', 'hardware-supply', 'automation']),
+    clientName: z.string(),
+    completionDate: z.date(),
+    images: z.array(z.string()),
+    projectUrl: z.string().optional(),
+    automationSystem: z.string().optional(),
+    technologies: z.array(z.string()),
+    systemComponents: z.array(z.string()).optional(),
+    processOverview: z.string().optional(),
+    outcomeBenefits: z.string().optional(),
+    metaTitle: z.string(),
+    metaDescription: z.string(),
+  }),
+});
+
 export const collections = {
   'about': aboutCollection,
   'blog': blogCollection,
   'fabrication': fabricationPortfolioCollection,
-  'materials': materialSupplyCollection
+  'materials': materialSupplyCollection,
+  'portfolio-items': portfolioItemsCollection
 }; 
