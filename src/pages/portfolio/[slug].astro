@@ -1,0 +1,99 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import type { PortfolioItem } from '../../types/portfolio';
+
+export async function getStaticPaths() {
+  const portfolioItems = await getCollection('portfolio-items') as CollectionEntry<'portfolio-items'>[];
+  return portfolioItems.map((item) => ({
+    params: { slug: item.slug },
+  }));
+}
+
+const { item } = Astro.props as { item: CollectionEntry<'portfolio-items'> };
+const { Content } = await item.render();
+
+<Layout title={`${item.data.title} - Portfolio | Krrish & Co`}>
+  <main class="container mx-auto px-4 py-12">
+    <article class="max-w-4xl mx-auto">
+      <header class="mb-12" data-aos="fade-down">
+        <h1 class="text-4xl md:text-5xl font-bold mb-6">{item.data.title}</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 mb-6">
+          {item.data.description}
+        </p>
+        <div class="flex flex-wrap gap-4 mb-6">
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">Client:</span>
+            <span>{item.data.clientName}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">Completed:</span>
+            <span>{new Date(item.data.completionDate).toLocaleDateString()}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-semibold">Category:</span>
+            <span class="capitalize">{item.data.category.replace('-', ' ')}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        {item.data.images?.map((image: string, index: number) => (
+          <div 
+            class="relative overflow-hidden rounded-lg shadow-lg"
+            data-aos="fade-up"
+            data-aos-delay={index * 100}
+            key={image} // Added key for unique identification
+          >
+            <Image
+              src={image}
+              alt={`${item.data.title} - Image ${index + 1}`}
+              class="w-full h-full object-cover"
+              width={800}
+              height={600}
+            />
+          </div>
+        ))}
+      </div>
+
+      <div class="prose prose-lg dark:prose-invert max-w-none mb-12" data-aos="fade-up">
+        <Content />
+      </div>
+
+      {item.data.technologies && (
+        <section class="mb-12" data-aos="fade-up">
+          <h2 class="text-2xl font-semibold mb-4">Technologies Used</h2>
+          <div class="flex flex-wrap gap-2">
+            {item.data.technologies.map((tech: string) => (
+              <span class="px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full" key={tech}>
+                {tech}
+              </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {item.data.systemComponents && (
+        <section class="mb-12" data-aos="fade-up">
+          <h2 class="text-2xl font-semibold mb-4">System Components</h2>
+          <ul class="list-disc list-inside space-y-2">
+            {item.data.systemComponents.map((component: string) => (
+              <li key={component}>{component}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {item.data.outcomeBenefits && (
+        <section data-aos="fade-up">
+          <h2 class="text-2xl font-semibold mb-4">Outcomes & Benefits</h2>
+          <div class="prose prose-lg dark:prose-invert">
+            <p>{item.data.outcomeBenefits}</p>
+          </div>
+        </section>
+      )}
+    </article>
+  </main>
+</Layout> 

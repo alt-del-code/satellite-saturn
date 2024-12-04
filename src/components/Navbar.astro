@@ -3,19 +3,20 @@ import { Icon as AstroIcon } from 'astro-icon/components';
 import { Image } from 'astro:assets';
 import config from '../config';
 import logo from '../assets/images/logo.svg';
+import TallyPopupButton from './sections/TallyPopupButton.astro';
 
 const menuItems = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Portfolio", href: "/portfolio" },
   { label: "Blog", href: "/blog" },
-  { label: "Theme", href: "/theme" },
+
 ];
 
 const currentPath = Astro.url.pathname;
 ---
 
-<nav class="fixed w-full z-50 transition-all duration-500 px-4 py-2 top-2" id="main-nav">
+<nav class="sticky top-0 w-full z-50 transition-all duration-500 px-4 py-2" id="main-nav">
   <div class="max-w-7xl mx-auto">
     <div class="bg-white/40 dark:bg-dark-surface/30 backdrop-blur-xl shadow-lg rounded-2xl border border-gray-200/20 dark:border-white/5">
       <div class="container mx-auto px-6">
@@ -83,12 +84,11 @@ const currentPath = Astro.url.pathname;
                 <AstroIcon name="lucide:sun" class="w-5 h-5 dark:hidden" />
                 <AstroIcon name="lucide:moon" class="w-5 h-5 hidden dark:block" />
               </button>
-              <a 
-                href="/contact"
-                class="ml-2 px-5 py-2 rounded-xl text-sm font-medium bg-accent-orange-600 text-white transition-all duration-300 hover:shadow-lg hover:shadow-accent-orange-600/20 hover:bg-accent-orange-700 active:scale-95"
-              >
-                Get Quote/Contact
-              </a>
+              <TallyPopupButton
+                buttonText="Get Quote/Contact"
+                formId="3l0ykX"
+                class="inline-flex items-center ml-2 px-5 py-2 rounded-xl text-sm font-medium bg-accent-orange-600 text-white transition-all duration-300 hover:shadow-lg hover:shadow-accent-orange-600/20 hover:bg-accent-orange-700 active:scale-95"
+              />
             </div>
           </div>
 
@@ -145,14 +145,13 @@ const currentPath = Astro.url.pathname;
               >
                 <AstroIcon name="lucide:sun" class="w-5 h-5 dark:hidden" />
                 <AstroIcon name="lucide:moon" class="w-5 h-5 hidden dark:block" />
-                <span>Theme</span>
+                
               </button>
-              <a 
-                href="/contact"
-                class="block w-full text-center px-4 py-2.5 rounded-xl text-base font-medium bg-accent-orange-600 text-white hover:bg-accent-orange-700 transition-all duration-300"
-              >
-                Get Quote/Contact
-              </a>
+              <TallyPopupButton
+                buttonText="Get Quote/Contact"
+                formId="3l0ykX"
+                class="inline-flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-base font-medium bg-accent-orange-600 text-white hover:bg-accent-orange-700 transition-all duration-300"
+              />
             </div>
           </div>
         </div>

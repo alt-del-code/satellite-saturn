@@ -1,0 +1,410 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+
+interface PortfolioItem {
+  slug: string;
+  data: {
+    title: string;
+    date: Date;
+    description: string;
+    category: string;
+    image: string;
+  };
+}
+
+const fabricationItems = await getCollection('fabrication');
+const materialItems = await getCollection('materials');
+
+// Sort items by date
+const sortedFabrication = fabricationItems.sort((a: PortfolioItem, b: PortfolioItem) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+const sortedMaterials = materialItems.sort((a: PortfolioItem, b: PortfolioItem) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const fabricationCategories = ['all', 'metal', 'structural', 'custom'];
+const materialCategories = ['all', 'raw', 'processed', 'hardware'];
+const sortOptions = [
+  { value: 'date-desc', label: 'Newest First' },
+  { value: 'date-asc', label: 'Oldest First' },
+  { value: 'title-asc', label: 'Title A-Z' },
+  { value: 'title-desc', label: 'Title Z-A' }
+];
+---
+
+<Layout title="Portfolio - Fabrication & Materials | KrrishCo">
+  <main class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold text-center mb-8" data-aos="fade-down">Our Work & Materials</h1>
+    
+    <!-- Tabs -->
+    <div class="flex justify-center mb-8 space-x-4" data-aos="fade-up">
+      <button id="fab-tab" class="px-6 py-2 text-lg font-semibold border-b-2 border-blue-500 transition-all duration-300 hover:bg-blue-50">
+        Fabrication Projects
+      </button>
+      <button id="mat-tab" class="px-6 py-2 text-lg font-semibold border-b-2 border-transparent transition-all duration-300 hover:bg-green-50 ml-4">
+        Material Supply
+      </button>
+    </div>
+
+    <!-- Search and Sort Controls -->
+    <div class="mb-8 space-y-4 md:space-y-0 md:flex md:justify-between md:items-center" data-aos="fade-up">
+      <!-- Search Input -->
+      <div class="relative w-full md:w-96">
+        <input 
+          type="search" 
+          id="portfolio-search"
+          placeholder="Search projects..."
+          class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        />
+        <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="relative w-full md:w-48">
+        <select 
+          id="sort-select"
+          class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none cursor-pointer bg-white"
+        >
+          {sortOptions.map(option => (
+            <option value={option.value}>{option.label}</option>
+          ))}
+        </select>
+        <svg class="absolute right-3 top-3 h-4 w-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Category Filters -->
+    <div class="mb-8 overflow-x-auto">
+      <!-- Fabrication Filters -->
+      <div id="fab-filters" class="flex justify-start md:justify-center flex-nowrap md:flex-wrap gap-2 min-w-max px-4" data-aos="fade-up" data-aos-delay="100">
+        {fabricationCategories.map(category => (
+          <button
+            class="category-filter px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap
+                   hover:bg-blue-500 hover:text-white
+                   data-[active=true]:bg-blue-500 data-[active=true]:text-white
+                   data-[active=false]:bg-gray-100 data-[active=false]:text-gray-700"
+            data-category={category}
+            data-active={category === 'all'}
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      <!-- Material Filters -->
+      <div id="mat-filters" class="hidden flex justify-start md:justify-center flex-nowrap md:flex-wrap gap-2 min-w-max px-4" data-aos="fade-up" data-aos-delay="100">
+        {materialCategories.map(category => (
+          <button
+            class="category-filter px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap
+                   hover:bg-green-500 hover:text-white
+                   data-[active=true]:bg-green-500 data-[active=true]:text-white
+                   data-[active=false]:bg-gray-100 data-[active=false]:text-gray-700"
+            data-category={category}
+            data-active={category === 'all'}
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden">
+      <div class="flex justify-center items-center min-h-[400px]">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    </div>
+
+    <!-- Portfolio Sections -->
+    <div class="relative">
+      <!-- Fabrication Projects Section -->
+      <section id="fabrication-section" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        {sortedFabrication.map((item: PortfolioItem) => (
+          <article 
+            class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300" 
+            data-aos="fade-up"
+            data-category={item.data.category}
+            data-title={item.data.title.toLowerCase()}
+            data-date={new Date(item.data.date).getTime()}
+          >
+            {item.data.image && (
+              <div class="relative h-48 overflow-hidden group">
+                <Image
+                  src={item.data.image}
+                  alt={item.data.title}
+                  class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+                  width={400}
+                  height={300}
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+            )}
+            <div class="p-4 md:p-6">
+              <div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+                <span class="text-sm text-blue-600 font-semibold px-3 py-1 bg-blue-50 rounded-full">
+                  {item.data.category}
+                </span>
+                <time class="text-sm text-gray-500">
+                  {new Date(item.data.date).toLocaleDateString()}
+                </time>
+              </div>
+              <h3 class="text-xl font-bold mt-2 line-clamp-2">{item.data.title}</h3>
+              <p class="text-gray-600 mt-2 line-clamp-3">{item.data.description}</p>
+              <a 
+                href={`/portfolio/${item.slug}`} 
+                class="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+              >
+                View Details
+              </a>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <!-- Material Supply Section -->
+      <section id="materials-section" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+        {sortedMaterials.map((item: PortfolioItem) => (
+          <article 
+            class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:scale-[1.02] transition-all duration-300" 
+            data-aos="fade-up"
+            data-category={item.data.category}
+            data-title={item.data.title.toLowerCase()}
+            data-date={new Date(item.data.date).getTime()}
+          >
+            {item.data.image && (
+              <div class="relative h-48 overflow-hidden group">
+                <Image
+                  src={item.data.image}
+                  alt={item.data.title}
+                  class="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+                  width={400}
+                  height={300}
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+            )}
+            <div class="p-4 md:p-6">
+              <div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+                <span class="text-sm text-green-600 font-semibold px-3 py-1 bg-green-50 rounded-full">
+                  {item.data.category}
+                </span>
+                <time class="text-sm text-gray-500">
+                  {new Date(item.data.date).toLocaleDateString()}
+                </time>
+              </div>
+              <h3 class="text-xl font-bold mt-2 line-clamp-2">{item.data.title}</h3>
+              <p class="text-gray-600 mt-2 line-clamp-3">{item.data.description}</p>
+              <a 
+                href={`/materials/${item.slug}`} 
+                class="inline-block mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+              >
+                View Details
+              </a>
+            </div>
+          </article>
+        ))}
+      </section>
+    </div>
+
+    <!-- No Results Message -->
+    <div id="no-results" class="hidden text-center py-12">
+      <h3 class="text-xl text-gray-600">No items found matching your criteria.</h3>
+      <p class="text-gray-500 mt-2">Try adjusting your search or filters.</p>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const fabTab = document.getElementById('fab-tab');
+  const matTab = document.getElementById('mat-tab');
+  const fabSection = document.getElementById('fabrication-section');
+  const matSection = document.getElementById('materials-section');
+  const fabFilters = document.getElementById('fab-filters');
+  const matFilters = document.getElementById('mat-filters');
+  const loading = document.getElementById('loading');
+  const noResults = document.getElementById('no-results');
+  const searchInput = document.getElementById('portfolio-search') as HTMLInputElement;
+  const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+
+  let currentSection = fabSection;
+  let currentCategory = 'all';
+  let searchTerm = '';
+
+  // Helper function to show loading state
+  const showLoading = () => {
+    if (loading) loading.classList.remove('hidden');
+    if (fabSection) fabSection.classList.add('hidden');
+    if (matSection) matSection.classList.add('hidden');
+    if (noResults) noResults.classList.add('hidden');
+  };
+
+  // Helper function to hide loading state
+  const hideLoading = () => {
+    if (loading) loading.classList.add('hidden');
+  };
+
+  // Sort items
+  const sortItems = (items: NodeListOf<Element>, sortValue: string) => {
+    const itemsArray = Array.from(items);
+    
+    switch (sortValue) {
+      case 'date-desc':
+        return itemsArray.sort((a, b) => Number(b.getAttribute('data-date')) - Number(a.getAttribute('data-date')));
+      case 'date-asc':
+        return itemsArray.sort((a, b) => Number(a.getAttribute('data-date')) - Number(b.getAttribute('data-date')));
+      case 'title-asc':
+        return itemsArray.sort((a, b) => (a.getAttribute('data-title') || '').localeCompare(b.getAttribute('data-title') || ''));
+      case 'title-desc':
+        return itemsArray.sort((a, b) => (b.getAttribute('data-title') || '').localeCompare(a.getAttribute('data-title') || ''));
+      default:
+        return itemsArray;
+    }
+  };
+
+  // Filter and sort items
+  const filterItems = (section: HTMLElement | null, category: string) => {
+    if (!section) return;
+    
+    showLoading();
+    currentSection = section;
+    currentCategory = category;
+    
+    setTimeout(() => {
+      const items = section.querySelectorAll('article');
+      let visibleCount = 0;
+
+      // First filter by category and search term
+      items.forEach(item => {
+        const itemCategory = item.getAttribute('data-category');
+        const itemTitle = (item.getAttribute('data-title') || '').toLowerCase();
+        const matchesCategory = category === 'all' || itemCategory === category;
+        const matchesSearch = searchTerm === '' || itemTitle.includes(searchTerm.toLowerCase());
+
+        if (matchesCategory && matchesSearch) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      // Then sort visible items
+      const sortedItems = sortItems(items, sortSelect.value);
+      const fragment = document.createDocumentFragment();
+      sortedItems.forEach(item => fragment.appendChild(item.cloneNode(true)));
+      section.innerHTML = '';
+      section.appendChild(fragment);
+
+      section.classList.remove('hidden');
+      hideLoading();
+
+      // Show/hide no results message
+      if (noResults) {
+        noResults.classList.toggle('hidden', visibleCount > 0);
+      }
+    }, 300);
+  };
+
+  // Tab switching
+  fabTab?.addEventListener('click', () => {
+    fabTab.classList.add('border-blue-500');
+    matTab?.classList.remove('border-blue-500');
+    fabFilters?.classList.remove('hidden');
+    matFilters?.classList.add('hidden');
+    filterItems(fabSection, currentCategory);
+    matSection?.classList.add('hidden');
+  });
+
+  matTab?.addEventListener('click', () => {
+    matTab.classList.add('border-blue-500');
+    fabTab?.classList.remove('border-blue-500');
+    matFilters?.classList.remove('hidden');
+    fabFilters?.classList.add('hidden');
+    filterItems(matSection, currentCategory);
+    fabSection?.classList.add('hidden');
+  });
+
+  // Category filtering
+  document.querySelectorAll('.category-filter').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const target = e.target as HTMLButtonElement;
+      const category = target.getAttribute('data-category') || 'all';
+      
+      // Update active state of filter buttons
+      target.closest('div')?.querySelectorAll('.category-filter').forEach(btn => {
+        btn.setAttribute('data-active', 'false');
+      });
+      target.setAttribute('data-active', 'true');
+
+      filterItems(currentSection, category);
+    });
+  });
+
+  // Search functionality
+  let searchTimeout: ReturnType<typeof setTimeout>;
+  searchInput?.addEventListener('input', (e) => {
+    const target = e.target as HTMLInputElement;
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    searchTimeout = setTimeout(() => {
+      searchTerm = target.value;
+      filterItems(currentSection, currentCategory);
+    }, 300);
+  });
+
+  // Sort functionality
+  sortSelect?.addEventListener('change', () => {
+    filterItems(currentSection, currentCategory);
+  });
+</script>
+
+<style>
+  [data-aos] {
+    opacity: 0;
+    transition-property: opacity, transform;
+  }
+  [data-aos].aos-animate {
+    opacity: 1;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+</style> 

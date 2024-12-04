@@ -1,36 +1,28 @@
 ---
 import { Icon } from "astro-icon/components";
 
-interface Props {
-  buttonText?: string;
-  formId?: string;
+export interface Props {
+  buttonText: string;
+  formId: string;
+  class?: string;
 }
 
 const { 
-  buttonText = "Request Quote",
-  formId = "3l0ykX"
+  buttonText,
+  formId,
+  class: className = ""
 } = Astro.props;
 ---
 
 <button
-  id="open-tally"
-  class="inline-flex items-center px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
-  data-tally-form={formId}
+  type="button"
+  class={className}
+  data-tally-open={formId}
+  aria-label={buttonText}
 >
   {buttonText}
-  <Icon name="ph:arrow-right-bold" class="w-5 h-5 ml-2" />
+  <Icon name="ph:arrow-right-bold" class="w-5 h-5 ml-2 inline-block" />
 </button>
-
-<!-- Tally Script -->
-<script is:inline>
-  (function(d){
-    var s = d.createElement("script");
-    s.setAttribute("data-tally-script", "true");
-    s.src = "https://tally.so/widgets/embed.js";
-    s.defer = true;
-    d.body.appendChild(s);
-  })(document);
-</script>
 
 <script>
   // Type-safe event handler
@@ -42,14 +34,25 @@ const {
     }
   }
 
-  const button = document.getElementById('open-tally');
-  const formId = button?.getAttribute('data-tally-form');
+  // Initialize Tally buttons
+  function initTallyButtons() {
+    document.querySelectorAll('[data-tally-open]').forEach(button => {
+      button.addEventListener('click', () => {
+        const formId = button.getAttribute('data-tally-open');
+        if (formId && window.Tally) {
+          window.Tally.openPopup(formId);
+        }
+      });
+    });
+  }
 
-  if (button && formId) {
-    button.addEventListener('click', () => {
-      if (window.Tally) {
-        window.Tally.openPopup(formId);
-      }
+  // Run initialization
+  initTallyButtons();
+
+  // Support for hot module replacement
+  if (import.meta.hot) {
+    import.meta.hot.accept(() => {
+      initTallyButtons();
     });
   }
 </script> 

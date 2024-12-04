@@ -55,24 +55,33 @@ const blogCollection = defineCollection({
   })
 });
 
-const portfolioCollection = defineCollection({
+const fabricationPortfolioCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
+    date: z.date(),
     description: z.string(),
-    thumbnail: z.string().optional(),
-    category: z.enum(['web', 'mobile', 'design']),
-    technologies: z.array(z.string()),
-    projectUrl: z.string().url(),
-    meta: z.object({
-      title: z.string(),
-      description: z.string()
-    })
+    category: z.enum(['metal', 'structural', 'custom']),
+    image: z.string(),
+    content: z.string().optional()
+  })
+});
+
+const materialSupplyCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    date: z.date(),
+    description: z.string(),
+    category: z.enum(['raw', 'processed', 'hardware']),
+    image: z.string(),
+    content: z.string().optional()
   })
 });
 
 export const collections = {
   'about': aboutCollection,
   'blog': blogCollection,
-  'portfolio-items': portfolioCollection
+  'fabrication': fabricationPortfolioCollection,
+  'materials': materialSupplyCollection
 }; 

@@ -1,0 +1,214 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { Icon } from 'astro-icon/components';
+import config from '../config';
+import TallyFormEmbed from '../components/sections/TallyFormEmbed.astro';
+import CalendarBooking from '../components/sections/CalendarBooking.astro';
+
+const contactInfo = [
+  {
+    icon: 'ph:map-pin-bold',
+    title: 'Visit Us',
+    content: config.company.contact.address.full,
+    link: config.company.contact.address.maps
+  },
+  {
+    icon: 'ph:phone-bold',
+    title: 'Call Us',
+    content: config.company.contact.phone.primary,
+    link: `tel:${config.company.contact.phone.primary}`
+  },
+  {
+    icon: 'ph:envelope-bold',
+    title: 'Email Us',
+    content: config.company.contact.email.primary,
+    link: `mailto:${config.company.contact.email.primary}`
+  }
+];
+
+const pageTitle = "Contact Us | Get a Quote";
+const pageDescription = "Contact us for inquiries or request a quote for your industrial fabrication and supply needs. We'll get back to you within 24 hours.";
+
+const tabs = [
+  { id: 'contact', label: 'Contact Us', icon: 'ph:envelope-bold' },
+  { id: 'quote', label: 'Get Quote', icon: 'ph:calculator-bold' },
+  { id: 'booking', label: 'Book Meeting', icon: 'ph:calendar-bold' }
+];
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <div class="relative py-16 md:py-24">
+    <!-- Background Elements -->
+    <div class="absolute inset-0 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <div class="absolute inset-0 bg-grid-pattern opacity-[0.05] dark:opacity-[0.02]"></div>
+    </div>
+
+    <div class="container relative mx-auto px-4">
+      <!-- Header Section -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 
+          class="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary-600 to-accent-orange-600 bg-clip-text text-transparent"
+          data-aos="fade-up"
+        >
+          Let's Start a Conversation
+        </h1>
+        <p 
+          class="text-gray-600 dark:text-gray-400 text-lg"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
+          Whether you need a quote or have questions, we're here to help
+        </p>
+      </div>
+
+      <!-- Contact Info Cards -->
+      <div 
+        class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16"
+        data-aos="fade-up"
+        data-aos-delay="200"
+      >
+        {contactInfo.map((info) => (
+          <a
+            href={info.link}
+            class="group bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50"
+            target={info.icon === 'ph:map-pin-bold' ? '_blank' : '_self'}
+            rel={info.icon === 'ph:map-pin-bold' ? 'noopener noreferrer' : ''}
+          >
+            <div class="flex items-center gap-4">
+              <div class="bg-primary-100 dark:bg-primary-900/30 p-3 rounded-lg group-hover:scale-110 transition-transform duration-300">
+                <Icon 
+                  name={info.icon} 
+                  class="w-6 h-6 text-primary-600 dark:text-primary-400" 
+                />
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white mb-1">
+                  {info.title}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                  {info.content}
+                </p>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <!-- Tabs -->
+      <div class="max-w-4xl mx-auto">
+        <div class="flex flex-wrap justify-center gap-4 mb-8">
+          {tabs.map((tab) => (
+            <button
+              class="tab-button flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all duration-300"
+              data-tab={tab.id}
+            >
+              <Icon name={tab.icon} class="w-5 h-5" />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <!-- Form Sections -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
+          <div id="contact" class="tab-content p-8">
+            <TallyFormEmbed
+              formId={config.integrations.forms.tally.contact.formId}
+              title={config.integrations.forms.tally.contact.title}
+              description={config.integrations.forms.tally.contact.description}
+            />
+          </div>
+          
+          <div id="quote" class="tab-content hidden p-8">
+            <TallyFormEmbed
+              formId={config.integrations.forms.tally.quote.formId}
+              title={config.integrations.forms.tally.quote.title}
+              description={config.integrations.forms.tally.quote.description}
+            />
+          </div>
+          
+          <div id="booking" class="tab-content hidden p-8">
+            <CalendarBooking
+              username={config.integrations.calendar.username}
+              height={config.integrations.calendar.defaultHeight}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .tab-button {
+    @apply bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400;
+  }
+
+  .tab-button.active {
+    @apply bg-primary-600 text-white shadow-lg shadow-primary-600/20;
+  }
+</style>
+
+<script is:inline>
+  // Load Tally Script
+  (function(d){
+    var s = d.createElement("script");
+    s.setAttribute("data-tally-script", "true");
+    s.src = "https://tally.so/widgets/embed.js";
+    s.defer = true;
+    d.body.appendChild(s);
+  })(document);
+</script>
+
+<script>
+  // Type definitions
+  interface HTMLElementWithDataTab extends HTMLElement {
+    dataset: {
+      tab?: string;
+    };
+  }
+
+  function setupTabs(): void {
+    const tabs = document.querySelectorAll<HTMLElementWithDataTab>('.tab-button');
+    const contents = document.querySelectorAll<HTMLElement>('.tab-content');
+
+    function setActiveTab(tabId: string): void {
+      // Update button states
+      tabs.forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabId);
+      });
+
+      // Update content visibility
+      contents.forEach(content => {
+        content.classList.toggle('hidden', content.id !== tabId);
+      });
+    }
+
+    // Add click handlers
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.tab;
+        if (tabId) setActiveTab(tabId);
+      });
+    });
+
+    // Set initial active tab
+    setActiveTab('contact');
+  }
+
+  // Initialize tabs
+  setupTabs();
+
+  // Support for hot module replacement
+  if (import.meta.hot) {
+    import.meta.hot.accept(() => {
+      setupTabs();
+    });
+  }
+</script> 
